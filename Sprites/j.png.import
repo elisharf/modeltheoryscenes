@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b31sih14thevr"
-path="res://.godot/imported/sunsetvillage.png-c1c32d04122851683171166acff359bf.ctex"
+uid="uid://dkvwk6fghvjpc"
+path="res://.godot/imported/j.png-e13c601c982e6873799f1ebeddb77acc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Background/sunsetvillage.png"
-dest_files=["res://.godot/imported/sunsetvillage.png-c1c32d04122851683171166acff359bf.ctex"]
+source_file="res://Sprites/j.png"
+dest_files=["res://.godot/imported/j.png-e13c601c982e6873799f1ebeddb77acc.ctex"]
 
 [params]
 

@@ -1,0 +1,78 @@
+[gd_scene load_steps=2 format=3 uid="uid://gl8eol14vbad"]
+
+[ext_resource type="Script" path="res://modeltheory.gd" id="1_dmicy"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1, 0.994382)
+script = ExtResource("1_dmicy")
+
+[node name="Model" type="Panel" parent="."]
+layout_mode = 0
+offset_top = -3.0
+offset_right = 40.0
+offset_bottom = 37.0
+scale = Vector2(12.431, 16.3558)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Model"]
+layout_mode = 0
+offset_top = 0.161711
+offset_right = 268.0
+offset_bottom = 85.1617
+scale = Vector2(0.148337, 0.109164)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Model/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Model/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "universe   "
+
+[node name="Universe" type="LineEdit" parent="Model/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+expand_to_text_length = true
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Model/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Model/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "properties   "
+
+[node name="Properties" type="TextEdit" parent="Model/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Submit" type="Button" parent="Model/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+text = "simulate!"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Model/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Model/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "common ground"
+
+[node name="CG" type="TextEdit" parent="Model/VBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+text = "At = {<house1,topleft>}"
+
+[node name="Scene" type="Window" parent="."]
+mode = 2
+position = Vector2i(500, 36)
+size = Vector2i(650, 650)
+
+[node name="Node2D" type="Node2D" parent="Scene"]
+position = Vector2(500, 0)
+rotation = 3.14159
+scale = Vector2(38.462, -1)
