@@ -65,14 +65,4 @@ text = "common ground"
 [node name="CG" type="TextEdit" parent="Model/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
-text = "At = {<house1,topleft>}"
-
-[node name="Scene" type="Window" parent="."]
-mode = 2
-position = Vector2i(500, 36)
-size = Vector2i(650, 650)
-
-[node name="Node2D" type="Node2D" parent="Scene"]
-position = Vector2(500, 0)
-rotation = 3.14159
-scale = Vector2(38.462, -1)
+text = "At = {<house1,topleft>,<house2,bottomright>}"
