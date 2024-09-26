@@ -15,18 +15,18 @@ script = ExtResource("1_dmicy")
 [node name="Model" type="Panel" parent="."]
 layout_mode = 0
 offset_top = -3.0
-offset_right = 40.0
-offset_bottom = 37.0
-scale = Vector2(12.431, 16.3558)
+offset_right = 88.0
+offset_bottom = 77.0
+scale = Vector2(6.06371, 8.07999)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Model"]
 layout_mode = 0
-offset_top = 0.161711
-offset_right = 268.0
-offset_bottom = 85.1617
+offset_right = 593.0
+offset_bottom = 728.0
 scale = Vector2(0.148337, 0.109164)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Model/VBoxContainer"]
+custom_minimum_size = Vector2(0, 75)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Model/VBoxContainer/HBoxContainer"]
@@ -39,6 +39,7 @@ size_flags_horizontal = 3
 expand_to_text_length = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="Model/VBoxContainer"]
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Model/VBoxContainer/HBoxContainer2"]
@@ -51,11 +52,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Submit" type="Button" parent="Model/VBoxContainer"]
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2(0, 75)
 layout_mode = 2
 text = "simulate!"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Model/VBoxContainer"]
+custom_minimum_size = Vector2(0, 275)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Model/VBoxContainer/VBoxContainer"]
@@ -65,4 +67,5 @@ text = "common ground"
 [node name="CG" type="TextEdit" parent="Model/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
-text = "At = {<house1,topleft>,<house2,bottomright>}"
+text = "At = {<house1,topleft>,<house2,bottomright>}
+"

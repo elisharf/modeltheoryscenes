@@ -1,38 +1,37 @@
 extends Control
 
-@onready var n_windows = 6
+
+@onready var n_rows = 3
 @onready var n_columns = 2
-@onready var worlds = []
-@onready var entity_dict = {}
 @onready var submit = get_node("Model/VBoxContainer/Submit")  # Path to the Button node
 @onready var universe = get_node("Model/VBoxContainer/HBoxContainer/Universe")  # Path to the LineEdit node
 @onready var properties = get_node("Model/VBoxContainer/HBoxContainer2/Properties")  # Path to the LineEdit node
 @onready var cg = get_node("Model/VBoxContainer/VBoxContainer/CG")  # Path to the LineEdit node
-@onready var scenes = Control.new()  # Path to the node where you render the scene
+@onready var worlds = Control.new()  # Path to the node where you render the scene
 
 # CONSTANTS
+const screen_width = 1152
+const scene_width = 650
 const pos_const = {
-	"topleft": Vector2(100,100),
-	"bottomleft": Vector2(100,500),
-	"topright": Vector2(500,100),
-	"bottomright": Vector2(500,500),
-	"center": Vector2(325,325)
+	"topleft": Vector2(scene_width*0.25,scene_width*0.25),
+	"bottomleft": Vector2(scene_width*0.25,scene_width*0.75),
+	"topright": Vector2(scene_width*0.75,scene_width*0.25),
+	"bottomright": Vector2(scene_width*0.75,scene_width*0.75),
+	"center": Vector2(scene_width*0.5,scene_width*0.5)
 }
+const locations = ["house1","house2"]
 const scale_dict = {
 	"house1": Vector2(1.5,1.5),
 	"house2": Vector2(0.5,0.5),
 }
 
-const locations = ["house1","house2"]
-
 func _ready():
-	self.y_sort_enabled = true
 	submit.connect("pressed", _on_click)
 
 
 func _on_click():
 	process_input()
-	
+
 
 func parse_property(property):
 	var parsed_property = {}
@@ -40,143 +39,172 @@ func parse_property(property):
 	rex.compile("(?<pred>.+) \\= \\{(?<args>.+)\\}")
 	var result = rex.search(property)
 	parsed_property["pred"] = result.get_string("pred")
-	
-	var argrex = RegEx.new()
-	argrex.compile("\\<(?<arg>.+?)\\>")
-	parsed_property["args"] = argrex.search_all(result.get_string("args"))
-		
+
+	var arg_str = result.get_string("args")
+	if arg_str.contains('<'):
+		var argrex = RegEx.new()
+		argrex.compile("\\<(?<arg>.+?)\\>")
+		parsed_property["args"] = []
+		for arg in argrex.search_all(arg_str):
+			parsed_property["args"].append(arg.get_string("arg"))
+	else:
+		parsed_property["args"] = arg_str.split(',')
 	return parsed_property
-	
-func get_pos(pos):
+
+func get_pos(entities,pos):
 	if pos in pos_const.keys():
 		return pos_const[pos]
-	elif pos in entity_dict.keys():
-		return entity_dict[pos][0].position
+	elif pos in entities.keys():
+		return entities[pos][0].position
 	else:
-		return Vector2(500,500)
+		return Vector2(scene_width/2,scene_width/2)
+	
 
-#func _handle_Tall(args):
-	#for arg in args:
-		#if arg in entity
+func _Happy(entities, args):
+	for arg in args:
+		if arg in entities:
+			var e = entities[arg][0]
+			e.properties.append("Happy")
+			
+			var happyface = Sprite2D.new()
+			happyface.texture = load("res://Scales/happy.png")
+			happyface.scale.x = (e.base_size.x/happyface.texture.get_width())*0.25
+			happyface.scale.y = happyface.scale.x
+			e.add_scale(happyface, 60, 100)
+
+func _Tall(entities, args):
+	for arg in args:
+		if arg in entities:
+			entities[arg][0].scale.y += 0.2
+			entities[arg][0].properties.append("Tall")
 
 func move_entity_to_circle_edge(center: Vector2, radius: float, angle_degrees: float) -> Vector2:
 	# Convert degrees to radians
 	var angle_radians = deg_to_rad(angle_degrees)
-	
+
 	# Calculate new position on the circle's edge
 	var x_new = center.x + radius * cos(angle_radians)
 	var y_new = center.y + radius * sin(angle_radians)
-	
+
 	# Return the new position as a Vector2
 	return Vector2(x_new, y_new)
 
-				
-func _handle_At(args):
+
+
+func _At(entities,args):
 	for arg in args:
-		arg = arg.get_string("arg").split(',')
-		var e = Area2D.new()
-	
-		e.collision_mask = 1
-		e.collision_layer = 1
-		e.monitoring = true
-		e.monitorable = true
-		
-		var texture = Sprite2D.new()
+		arg = arg.split(',')
 		var nm = arg[0]
 		var pos = arg[1]
-		texture.texture = load("res://Sprites/%s.png" % nm)
-		if nm not in locations:
-			texture.hframes = 3
-			texture.vframes = 2
-			texture.frame = 1
-
-		e.add_child(texture)
-
-		e.position = get_pos(pos)
 		
-		# For variation
-		if pos in entity_dict.keys():
-			var rng = RandomNumberGenerator.new()
-			var deg = rng.randf_range(0,360)
-			var rad = (entity_dict[pos][1]/2).length()
-			e.position = move_entity_to_circle_edge(e.position,rad,deg)
+		var e = Area2D.new()
+		var script = load("res://sprite.gd")
+		e.set_script(script)
+		e.nm = nm
+		e.properties.append("At("+pos+")")
+		e.position = get_pos(entities,pos)
+		e.sprite.texture = load("res://Sprites/%s.png" % nm)
+		e.base_size = e.sprite.texture.get_size()
+		if nm not in locations:
+			e.sprite.hframes = 3
+			e.sprite.vframes = 2
+			e.sprite.frame = 1
+			e.base_size.x /= 3
+			e.base_size.y /= 2
+
+		e.add_child(e.sprite)
 
 		var sc = scale_dict[nm] if nm in scale_dict else Vector2(1,1)
-		
 		e.scale = sc
-
-		var collision = CollisionShape2D.new()
-		var rect = RectangleShape2D.new()
 		
-		rect.size = texture.texture.get_size()*sc
-		collision.shape = rect
-		e.add_child(collision)
-		entity_dict[nm] = [e, rect.size]
+		# For variation
+		if pos in entities.keys():
+			var rng = RandomNumberGenerator.new()
+			var deg = rng.randf_range(0,360)
+			var rad = (entities[pos][1]/2).length()
+			e.position = move_entity_to_circle_edge(e.position,rad,deg)
 
-func handle_property(parsed_property):
+		entities[nm] = [e, e.base_size*sc]
+
+func handle_property(entities,parsed_property):
 	var pred = parsed_property["pred"]
 	var args = parsed_property["args"]
 	if pred == "At":
-		_handle_At(args)
-	#if pred == "Tall":
-		#_handle_Tall(args)
+		_At(entities,args)
+	elif pred == "Tall":
+		_Tall(entities,args)
+	elif pred == "Happy":
+		_Happy(entities,args)
 
-func handle_properties(props):
+func handle_properties(entities,props):
 	for property in props:
 		if not property.is_empty():
-			handle_property(parse_property(property))
-	
-func background_init():
-	
-	var canvas = CanvasLayer.new()
+			handle_property(entities,parse_property(property))
+
+func background_init(entities,canvas):
+
 	var background = TextureRect.new()
 	background.texture = load("res://Background/background.png")
 	background.set_anchors_preset(PRESET_FULL_RECT)
+	var border = TextureRect.new()
+	border.texture = load("res://Background/border.png")
+	border.anchor_left = -0.03
+	border.anchor_top = -0.1
 	canvas.add_child(background)
-	
-	handle_properties(cg.text.split('\n'))
-	for entity in entity_dict.keys():
-		canvas.add_child(entity_dict[entity][0])
+	canvas.add_child(border)
+
+	handle_properties(entities,cg.text.split('\n'))
+	for entity in entities.keys():
+		canvas.add_child(entities[entity][0])
 	return canvas
-	
+
 func check_universe() -> bool:
 	return !universe.text.is_empty()
-	
 
-func universe_init(canvas):
-	handle_properties(properties.text.split('\n'))
-	var entities = universe.text.split(',')
-	for e in entities:
-		if e in entity_dict.keys():
-			canvas.add_child(entity_dict[e][0])
 
-func position_world(index):
+func universe_init(entities,canvas):
+	handle_properties(entities,properties.text.split('\n'))
+	var De = universe.text.split(',')
+	for e in De:
+		if e in entities.keys():
+			canvas.add_child(entities[e][0])
+
+func setup_world(index,world):
 	var x = index % n_columns
 	var y = int(index) / int(n_columns)
-	var width = 650 / n_columns
-	var length = 650 / (n_windows / n_columns)
-	return Vector2(x*width,y*length)
+	var width = scene_width / n_columns
+	var length = scene_width / ((n_rows*n_columns) / n_columns)
+	world.position = Vector2(x*width,y*length)
+	world.size = Vector2(scene_width,scene_width)
+	world.scale = Vector2(float(width)/float(scene_width),float(length)/float(scene_width))
+
+func reset_worlds():
+	worlds.free()
+	worlds = Control.new()
+	worlds.size = Vector2(scene_width,scene_width)
+	worlds.position = Vector2(screen_width-scene_width, 0)
+	get_viewport().set_physics_object_picking_sort(true)
+	if get_child_count() > 1:
+		remove_child(worlds)
+	add_child(worlds)
+
 
 func process_input():
 	# Use the input value to change the rendered scene
 	# For example, create a new object or change properties
-	entity_dict = {}
-	worlds = []
-	scenes.size = Vector2(650,650)
-	scenes.position = Vector2(500,0)
-	for child in scenes.get_children():
-		child.queue_free()
+	reset_worlds()
 	
-	add_child(scenes)
-	for i in range(n_windows):
+	var n_worlds = n_rows*n_columns
+	for i in range(n_worlds):
 		var world = SubViewportContainer.new()
 		var script = load("res://world.gd")
-		world.position = position_world(i)
+		setup_world(i, world)
 		world.set_script(script)
-		scenes.add_child(world)
+		worlds.add_child(world)
 
-		var canvas = background_init()
+		var entities = {}
+		var canvas = CanvasLayer.new()
+		background_init(entities,canvas)
 		if check_universe():
-			universe_init(canvas)
+			universe_init(entities,canvas)
 		world.viewport.get_child(0).add_child(canvas)
-		worlds.append(world)
