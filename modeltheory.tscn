@@ -68,4 +68,4 @@ text = "common ground"
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 text = "At = {<house1,topleft>,<house2,bottomright>}
-"
+Standard = {<Tall,6ft>}"

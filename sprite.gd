@@ -1,7 +1,7 @@
 extends Area2D
 
 var scales = []
-var properties = [] 
+var properties = []
 var sprite = Sprite2D.new()
 var property_box = Label.new()
 var property_box_theme = preload("res://Themes/property_box.tres")
@@ -19,17 +19,15 @@ const scale_factor = 1.5
 
 func _ready():
 	# Create a Viewport and set its initial size
-
 	z_index = 1
 	base_position = position
 	base_scale = scale
 	
 	# Add content to the viewport (e.g., a simple scene or a label)
-		
 	shape.size = base_size
 	shape_container.set_shape(shape)
 	add_child(shape_container)
-	
+
 func set_block_input(block):
 	block_input = block
 
@@ -38,13 +36,12 @@ func focus_clicks():
 		if child.is_class("Area2D") and child != self:
 			child.set_block_input(true)
 
-
 func allow_clicks():
 	for child in get_parent().get_children():
 		if child.is_class("Area2D"):
 			child.set_block_input(false)
 
-func add_scale(sprite, min_value, max_value):
+func add_scale(image, min_value, max_value):
 	var bar = ProgressBar.new()
 	
 	bar.theme = load("res://Themes/progress_bar.tres")
@@ -57,12 +54,13 @@ func add_scale(sprite, min_value, max_value):
 	bar.max_value = 100
 	var rnd = RandomNumberGenerator.new()
 	bar.value = rnd.randf_range(min_value,max_value)
-	sprite.position = bar.position
-	sprite.position.x += (bar.value / bar.max_value)*base_size.x
+	image.position = bar.position
+	image.position.x += (bar.value / bar.max_value)*base_size.x
 
 	scales.append(bar)
 	add_child(bar)
-	add_child(sprite)
+	add_child(image)	
+	return bar.value
 
 func add_property_box():
 	property_box.size = shape.size*scale
@@ -91,7 +89,7 @@ func _input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void
 			clicked = false
 			allow_clicks()
 			viewport.get_parent().set_block_input(false)
-			
+
 			# Return to the smaller size
 			scale = base_scale
 			position = base_position
