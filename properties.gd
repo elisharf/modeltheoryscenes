@@ -81,6 +81,7 @@ func _At(args,entities):
 		var script = load("res://sprite.gd")
 		e.set_script(script)
 		e.nm = nm
+		e.properties.append(nm)
 		e.position = get_pos(entities,pos)
 		e.sprite.texture = load("res://Sprites/%s.png" % nm)
 		e.base_size = e.sprite.texture.get_size()
