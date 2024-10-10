@@ -122,9 +122,9 @@ func handle_property(parsed_property,entities,standards):
 func parse_property(property):
 	var parsed_property = {}
 	var rex = RegEx.new()
-	rex.compile("(?<pred>.+) \\= \\{(?<args>.+)\\}")
+	rex.compile("(?<pred>.+)[ ]*\\=[ ]*\\{(?<args>.+)\\}")
 	var result = rex.search(property)
-	parsed_property["pred"] = result.get_string("pred")
+	parsed_property["pred"] = result.get_string("pred").rstrip(" ")
 
 	var arg_str = result.get_string("args")
 	if arg_str.contains('<'):
@@ -134,7 +134,10 @@ func parse_property(property):
 		for arg in argrex.search_all(arg_str):
 			parsed_property["args"].append(arg.get_string("arg"))
 	else:
-		parsed_property["args"] = arg_str.split(',')
+		var args = arg_str.split(',')
+		parsed_property["args"] = []
+		for arg in args:
+			parsed_property["args"].append(arg.rstrip(" ").lstrip(" "))
 	return parsed_property
 
 func sort_and_parse(properties):
